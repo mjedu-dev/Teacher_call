@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학교 교사용 호출 서비스 - 학생용</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header (No Admin links for students) -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🔔</div>
+        <div class="brand-text">
+          <h1>교사 호출 시스템</h1>
+          <p>영천고등학교 스마트 교무실 호출 서비스 (학생용)</p>
+        </div>
+        <span id="mock-badge" class="mock-badge-indicator" style="display: none;">
+          ⚡ Mock DB 작동 중
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      <section id="student-view" class="view-section active">
+        <div class="student-intro">
+          <h2>선생님 호출하기</h2>
+          <p>아래 목록에서 상담 및 질문을 원하시는 선생님의 호출 버튼을 눌러주세요.</p>
+        </div>
+        
+        <!-- Grid of Teacher Cards -->
+        <div id="teachers-grid" class="teachers-grid">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Student Paging Overlay Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="call-modal">
+        <h3 id="modal-teacher-name" class="modal-title">OOO 선생님 호출 중</h3>
+        <p id="modal-subtitle" class="modal-subtitle">
+          30초 이내에 선생님이 오지 않으시면 추가 정보를 남길 수 있습니다.
+        </p>
+
+        <!-- Pulsing Timer Circle -->
+        <div class="call-pulse-container">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring" style="animation-delay: 0.5s;"></div>
+          <div class="pulse-circle">
+            <span id="pulse-timer" class="pulse-timer">30</span>
+            <span class="pulse-timer-unit">초</span>
+          </div>
+        </div>
+
+        <!-- Hidden Student Info Form (Appears after 30s) -->
+        <div id="student-form-section" class="student-form-section">
+          <h4 class="form-title">학반 및 이름을 작성해주세요</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="student-grade">학년</label>
+              <input type="number" id="student-grade" class="input-control" min="1" max="6" placeholder="예: 3">
+            </div>
+            <div class="form-group">
+              <label for="student-class">학반 및 번호</label>
+              <input type="text" id="student-class" class="input-control" placeholder="예: 2반 15번">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="student-name">이름</label>
+            <input type="text" id="student-name" class="input-control" placeholder="예: 김철수">
+          </div>
+        </div>
+
+        <!-- Modal Actions Buttons -->
+        <div class="modal-actions">
+          <button id="btn-submit-info" class="btn-modal-primary" style="display: none;">
+            완료 및 메시지 남기기
+          </button>
+          <button id="btn-close-modal" class="btn-modal-primary">
+            선생님 오심 (완료)
+          </button>
+          <button id="btn-cancel-call" class="btn-modal-secondary">
+            호출 취소
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./student.js"></script>
+</body>
+</html>
