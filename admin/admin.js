@@ -24,7 +24,11 @@ const DEFAULT_TEACHERS = [
 
 let teacherSubscribers = [];
 let callSubscribers = [];
-
+// Chrome / Android에서 TTS 음성 목록 미리 로드
+window.speechSynthesis.onvoiceschanged = () => {
+  const voices = window.speechSynthesis.getVoices();
+  console.log("사용 가능한 TTS 음성:", voices);
+};
 function getMockTeachers() {
   const stored = localStorage.getItem(MOCK_TEACHERS_KEY);
   if (!stored) {
@@ -206,31 +210,48 @@ function setupMockService() {
 // Text to Speech
 function speakCallNotification(teacherName) {
   if (!audioEnabled) return;
-  
+
   const text = `${teacherName} 선생님 호출입니다.`;
-  
+
   const speakOnce = () => {
     return new Promise((resolve) => {
+
+      window.speechSynthesis.cancel();
+
       const utterance = new SpeechSynthesisUtterance(text);
+
       utterance.lang = 'ko-KR';
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
-      
+      utterance.volume = 1.0;
+
       const voices = window.speechSynthesis.getVoices();
-      const koVoice = voices.find(voice => voice.lang.includes('ko') || voice.lang.includes('KO'));
-      if (koVoice) utterance.voice = koVoice;
-      
+
+      const koVoice = voices.find(voice =>
+        voice.lang === 'ko-KR' ||
+        voice.lang.toLowerCase().startsWith('ko')
+      );
+
+      if (koVoice) {
+        utterance.voice = koVoice;
+        console.log("사용 음성:", koVoice.name, koVoice.lang);
+      }
+
       utterance.onend = () => resolve();
-      utterance.onerror = () => resolve();
-      
+
+      utterance.onerror = (event) => {
+        console.error("TTS 오류:", event.error);
+        resolve();
+      };
+
       window.speechSynthesis.speak(utterance);
     });
   };
-  
+
   speakOnce().then(() => {
     setTimeout(() => {
       speakOnce();
-    }, 600);
+    }, 800);
   });
 }
 
@@ -461,14 +482,49 @@ document.addEventListener('click', async (e) => {
 document.addEventListener('click', (e) => {
   if (e.target && e.target.id === 'btn-audio-enable') {
     audioEnabled = true;
-    
-    const testUtterance = new SpeechSynthesisUtterance("음성 알림 시스템이 정상 가동되었습니다.");
+
+    window.speechSynthesis.cancel();
+
+    const testUtterance =
+      new SpeechSynthesisUtterance("음성 알림 시스템이 정상 가동되었습니다.");
+
     testUtterance.lang = 'ko-KR';
+    testUtterance.rate = 1.0;
+    testUtterance.pitch = 1.0;
+    testUtterance.volume = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+
+    const koVoice = voices.find(voice =>
+      voice.lang === 'ko-KR' ||
+      voice.lang.toLowerCase().startsWith('ko')
+    );
+
+    if (koVoice) {
+      testUtterance.voice = koVoice;
+      console.log("선택된 한국어 음성:", koVoice.name, koVoice.lang);
+    } else {
+      console.warn("한국어 TTS 음성을 찾지 못했습니다.");
+    }
+
+    testUtterance.onstart = () => {
+      console.log("테스트 음성 재생 시작");
+    };
+
+    testUtterance.onend = () => {
+      console.log("테스트 음성 재생 완료");
+    };
+
+    testUtterance.onerror = (event) => {
+      console.error("테스트 TTS 오류:", event.error);
+    };
+
     window.speechSynthesis.speak(testUtterance);
-    
+
     const audioBanner = document.getElementById('audio-banner');
     audioBanner.classList.add('active');
-    audioBanner.innerHTML = '<span>✅ 한국어 음성 안내 시스템이 정상 작동 중입니다. (새 호출 발생 시 안내 방송 송출)</span>';
+    audioBanner.innerHTML =
+      '<span>✅ 한국어 음성 안내 시스템이 정상 작동 중입니다. (새 호출 발생 시 안내 방송 송출)</span>';
   }
 });
 
