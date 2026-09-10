@@ -15,11 +15,7 @@ const MOCK_TEACHERS_KEY = "mock_teachers";
 const MOCK_CALLS_KEY = "mock_calls";
 
 const DEFAULT_TEACHERS = [
-  { id: "T1", name: "김철수", subject: "국어", status: "호출 가능" },
-  { id: "T2", name: "이영희", subject: "수학", status: "자리비움" },
-  { id: "T3", name: "박민수", subject: "영어", status: "수업 중" },
-  { id: "T4", name: "최수진", subject: "과학", status: "출장" },
-  { id: "T5", name: "정우성", subject: "체육", status: "호출 가능" }
+
 ];
 
 let teacherSubscribers = [];
