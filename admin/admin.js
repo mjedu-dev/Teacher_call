@@ -470,11 +470,23 @@ document.getElementById('admin-add-teacher-form').addEventListener('submit', asy
 
 // Clear Call Logs
 document.addEventListener('click', async (e) => {
-  if (e.target && e.target.id === 'btn-clear-logs') {
-    if (confirm("정말 모든 호출 기록을 초기화하시겠습니까? (복구할 수 없습니다)")) {
-      await dbService.clearAllCalls(currentCalls);
-      alert("모든 호출 기록이 초기화되었습니다.");
+  if (e.target && e.target.id === 'btn-audio-enable') {
+    audioEnabled = true;
+
+    const audio = new Audio('../audio/call.mp3');
+    audio.volume = 1.0;
+
+    try {
+      await audio.play();
+      console.log("알림음 재생 성공");
+    } catch (err) {
+      console.error("알림음 재생 실패:", err);
     }
+
+    const audioBanner = document.getElementById('audio-banner');
+    audioBanner.classList.add('active');
+    audioBanner.innerHTML =
+      '<span>✅ 음성 알림 시스템이 정상 작동 중입니다.</span>';
   }
 });
 
