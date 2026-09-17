@@ -1601,81 +1601,38 @@ if (addTeacherForm) {
 // Clear Call Logs
 // =====================================================
 
-const clearLogsButton =
-  document.getElementById(
-    'btn-clear-logs'
-  );
-
+const clearLogsButton = document.getElementById('btn-clear-logs');
 
 if (clearLogsButton) {
-
-  clearLogsButton.addEventListener(
-    'click',
-    async () => {
-
-      if (
-        !confirm(
-          "정말 모든 호출 기록을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 없습니다."
-        )
-      ) {
-
-        return;
-      }
-
-
-      try {
-
-        console.log(
-          "로그 삭제 시작:",
-          currentCalls
-        );
-
-
-        await dbService
-          .clearAllCalls(
-            [...currentCalls]
-          );
-
-
-        console.log(
-          "로그 삭제 완료"
-        );
-
-
-        // 화면에서도 즉시 제거
-        currentCalls = [];
-
-        knownCallIds.clear();
-
-        renderAdminScreen(
-          currentTeachers,
-          currentCalls
-        );
-
-
-        alert(
-          "모든 호출 기록이 초기화되었습니다."
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "로그 삭제 실패:",
-          error
-        );
-
-
-        alert(
-          "로그 삭제에 실패했습니다.\n\n" +
-          "오류 코드: " +
-          (error.code || "없음") +
-          "\n\n" +
-          (error.message || error)
-        );
-      }
+  clearLogsButton.addEventListener('click', async () => {
+    if (!confirm("정말 모든 호출 기록을 초기화하시겠습니까?")) {
+      return;
     }
-  );
+
+    try {
+      alert("현재 삭제 대상 로그 수: " + currentCalls.length);
+
+      console.log("현재 currentCalls:", currentCalls);
+
+      await dbService.clearAllCalls([...currentCalls]);
+
+      currentCalls = [];
+      knownCallIds.clear();
+
+      renderAdminScreen(currentTeachers, currentCalls);
+
+      alert("모든 호출 기록이 초기화되었습니다.");
+
+    } catch (error) {
+      console.error("로그 삭제 실패:", error);
+
+      alert(
+        "로그 삭제 실패\n\n" +
+        "code: " + (error.code || "없음") + "\n" +
+        "message: " + (error.message || error)
+      );
+    }
+  });
 }
 
 
