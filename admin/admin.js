@@ -1641,84 +1641,59 @@ if (clearLogsButton) {
 // =====================================================
 
 const audioEnableButton =
-  document.getElementById(
-    'btn-audio-enable'
-  );
-
+  document.getElementById('btn-audio-enable');
 
 if (audioEnableButton) {
 
-  audioEnableButton.addEventListener(
-    'click',
-    async () => {
+  audioEnableButton.addEventListener('click', () => {
 
-      if (
-        !('speechSynthesis' in window)
-      ) {
-
-        alert(
-          "현재 브라우저에서는 음성 안내 기능을 지원하지 않습니다."
-        );
-
-        return;
-      }
-
-
-      audioEnabled = true;
-
-
-      try {
-
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.resume();
-
-        loadVoices();
-
-
-        // 버튼을 직접 눌렀을 때 테스트 음성을 내보냄
-        await speakOnce(
-          "음성 알림 시스템이 정상 가동되었습니다."
-        );
-
-
-        const audioBanner =
-          document.getElementById(
-            'audio-banner'
-          );
-
-
-        if (audioBanner) {
-
-          audioBanner.classList.add(
-            'active'
-          );
-
-
-          audioBanner.innerHTML =
-            '<span>✅ 한국어 음성 안내 시스템이 활성화되었습니다. (새 호출 발생 시 안내 방송)</span>';
-        }
-
-
-        console.log(
-          "음성 알림 활성화 완료"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "음성 알림 활성화 실패:",
-          error
-        );
-
-
-        alert(
-          "음성 안내 활성화 중 오류가 발생했습니다.\n\n" +
-          (error.message || error)
-        );
-      }
+    if (!('speechSynthesis' in window)) {
+      alert(
+        "현재 브라우저에서는 음성 안내 기능을 지원하지 않습니다."
+      );
+      return;
     }
-  );
+
+    // 1. 누르자마자 즉시 활성화
+    audioEnabled = true;
+
+    // 버튼 즉시 변경
+    audioEnableButton.textContent = "✅ 음성 안내 활성화됨";
+    audioEnableButton.disabled = true;
+
+    // 안내 배너도 즉시 변경
+    const audioBanner =
+      document.getElementById('audio-banner');
+
+    if (audioBanner) {
+      audioBanner.classList.add('active');
+      audioBanner.innerHTML =
+        '<span>✅ 한국어 음성 안내 시스템이 활성화되었습니다. (새 호출 발생 시 안내 방송)</span>';
+    }
+
+    console.log("음성 알림 즉시 활성화");
+
+    // 2. TTS 초기화
+    try {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
+      loadVoices();
+    } catch (error) {
+      console.error("TTS 초기화 오류:", error);
+    }
+
+    // 3. 테스트 음성은 뒤에서 실행
+    // 음성이 끝날 때까지 화면 전환을 기다리지 않음
+    speakOnce(
+      "음성 알림 시스템이 정상 가동되었습니다."
+    ).catch(error => {
+      console.error(
+        "테스트 음성 재생 오류:",
+        error
+      );
+    });
+
+  });
 }
 
 
