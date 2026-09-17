@@ -1635,7 +1635,6 @@ if (clearLogsButton) {
   });
 }
 
-
 // =====================================================
 // Audio Enabler
 // =====================================================
@@ -1654,14 +1653,15 @@ if (audioEnableButton) {
       return;
     }
 
-    // 1. 누르자마자 즉시 활성화
+    // 1. 즉시 활성화 상태 변경
     audioEnabled = true;
 
     // 버튼 즉시 변경
     audioEnableButton.textContent = "✅ 음성 안내 활성화됨";
+    audioEnableButton.classList.add("active");
     audioEnableButton.disabled = true;
 
-    // 안내 배너도 즉시 변경
+    // 안내 배너 즉시 변경
     const audioBanner =
       document.getElementById('audio-banner');
 
@@ -1673,30 +1673,35 @@ if (audioEnableButton) {
 
     console.log("음성 알림 즉시 활성화");
 
-    // 2. TTS 초기화
-    try {
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.resume();
-      loadVoices();
-    } catch (error) {
-      console.error("TTS 초기화 오류:", error);
-    }
+    // 2. 브라우저가 먼저 화면을 다시 그리게 함
+    requestAnimationFrame(() => {
 
-    // 3. 테스트 음성은 뒤에서 실행
-    // 음성이 끝날 때까지 화면 전환을 기다리지 않음
-    speakOnce(
-      "음성 알림 시스템이 정상 가동되었습니다."
-    ).catch(error => {
-      console.error(
-        "테스트 음성 재생 오류:",
-        error
-      );
+      requestAnimationFrame(() => {
+
+        // 3. 화면 변경 후 TTS 실행
+        try {
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
+          loadVoices();
+        } catch (error) {
+          console.error("TTS 초기화 오류:", error);
+        }
+
+        speakOnce(
+          "음성 알림 시스템이 정상 가동되었습니다."
+        ).catch(error => {
+          console.error(
+            "테스트 음성 재생 오류:",
+            error
+          );
+        });
+
+      });
+
     });
 
   });
 }
-
-
 // =====================================================
 // App Initialization
 // =====================================================
